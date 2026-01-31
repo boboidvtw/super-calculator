@@ -13,6 +13,7 @@ import { HealthCalculator } from './pages/health/HealthCalculator';
 import { AnniversaryCalculator } from './pages/anniversary/AnniversaryCalculator';
 import { FuelCalculator } from './pages/financial/FuelCalculator';
 import { InterestCalculator } from './pages/financial/InterestCalculator';
+import { InsuranceCalculator } from './pages/financial/InsuranceCalculator';
 
 function App() {
   return (
@@ -32,7 +33,9 @@ function App() {
           <Route path="health" element={<HealthCalculator />} />
           <Route path="anniversary" element={<AnniversaryCalculator />} />
           <Route path="fuel" element={<FuelCalculator />} />
+          <Route path="fuel" element={<FuelCalculator />} />
           <Route path="interest" element={<InterestCalculator />} />
+          <Route path="insurance" element={<InsuranceCalculator />} />
         </Route>
       </Routes>
     </HashRouter>

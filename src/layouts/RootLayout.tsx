@@ -89,6 +89,9 @@ export function RootLayout() {
                             <Link to={item.path} onClick={toggleMenu}>{item.label}</Link>
                         </li>
                     ))}
+                    <li>
+                        <Link to="/insurance" onClick={toggleMenu}>{t('menu.insurance')}</Link>
+                    </li>
                 </ul>
 
                 <div className={styles.donateSection}>

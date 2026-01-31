@@ -20,6 +20,7 @@ export const zhTw = {
         health: '健康計算',
         anniversary: '紀念日',
         settings: '設定',
+        insurance: '保險 IRR',
         donate: '贊助作者',
     },
     standard: {
@@ -95,6 +96,17 @@ export const zhTw = {
         principal: '本金',
         rate: '年利率',
         years: '年數',
+    },
+    insurance: {
+        title: '保險 IRR 計算',
+        monthlyPay: '保險月付額',
+        years: '繳款年限 (年)',
+        payout: '到期給付額',
+        calculate: '計算 IRR',
+        result: '年化報酬率 (IRR)',
+        totalPaid: '總繳金額',
+        netProfit: '淨利',
+        note: '註：假設每月初繳款，期滿末領回',
     }
 };
 
@@ -120,6 +132,7 @@ export const enUs = {
         health: 'Health',
         anniversary: 'Anniversary',
         settings: 'Settings',
+        insurance: 'Insurance IRR',
         donate: 'Donate',
     },
     standard: { title: 'Standard Calculator' },
@@ -135,20 +148,20 @@ export const enUs = {
 };
 
 // Add other languages placeholders for brevity, will implement fully later or on demand
-export const deDe = { common: { back: 'Zurück' }, menu: { home: 'Startseite', standard: 'Standard', currency: 'Währung', unit: 'Einheit', time: 'Zeit', number: 'Zahlensystem', size: 'Größe', donate: 'Spenden' } };
-export const frFr = { common: { back: 'Retour' }, menu: { home: 'Accueil', standard: 'Standard', currency: 'Devise', unit: 'Unité', time: 'Temps', number: 'Base', size: 'Taille', donate: 'Faire un don' } };
-export const esEs = { common: { back: 'Atrás' }, menu: { home: 'Inicio', standard: 'Estándar', currency: 'Moneda', unit: 'Unidad', time: 'Tiempo', number: 'Base', size: 'Talla', donate: 'Donar' } };
+export const deDe = { common: { back: 'Zurück' }, menu: { home: 'Startseite', standard: 'Standard', currency: 'Währung', unit: 'Einheit', time: 'Zeit', number: 'Zahlensystem', size: 'Größe', donate: 'Spenden', insurance: 'Versicherung IRR' } };
+export const frFr = { common: { back: 'Retour' }, menu: { home: 'Accueil', standard: 'Standard', currency: 'Devise', unit: 'Unité', time: 'Temps', number: 'Base', size: 'Taille', donate: 'Faire un don', insurance: 'Assurance IRR' } };
+export const esEs = { common: { back: 'Atrás' }, menu: { home: 'Inicio', standard: 'Estándar', currency: 'Moneda', unit: 'Unidad', time: 'Tiempo', number: 'Base', size: 'Talla', donate: 'Donar', insurance: 'Seguros IRR' } };
 export const jaJp = {
     common: { back: '戻る', clear: 'クリア' },
-    menu: { home: 'ホーム', standard: '電卓', currency: '通貨換算', unit: '単位変換', time: '時間計算', number: '進数変換', size: 'サイズ換算', donate: '寄付' },
+    menu: { home: 'ホーム', standard: '電卓', currency: '通貨換算', unit: '単位変換', time: '時間計算', number: '進数変換', size: 'サイズ換算', donate: '寄付', insurance: '保険 IRR' },
     unit: { length: '長さ', weight: '重さ', temperature: '温度', volume: '体積', area: '面積' }
 };
 export const koKr = {
     common: { back: '뒤로' },
-    menu: { home: '홈', standard: '계산기', currency: '환율', unit: '단위', time: '시간', number: '진법', size: '사이즈', donate: '후원' }
+    menu: { home: '홈', standard: '계산기', currency: '환율', unit: '단위', time: '시간', number: '진법', size: '사이즈', donate: '후원', insurance: '보험 IRR' }
 };
 export const zhCn = {
     common: { back: '返回', clear: '清除' },
-    menu: { home: '首页', standard: '标准计算器', currency: '货币兑换', unit: '单位换算', time: '时间计算', number: '号码转换', size: '尺寸转换', donate: '赞助' },
+    menu: { home: '首页', standard: '标准计算器', currency: '货币兑换', unit: '单位换算', time: '时间计算', number: '号码转换', size: '尺寸转换', donate: '赞助', insurance: '保险 IRR' },
     unit: { length: '长度', weight: '重量', temperature: '温度', volume: '体积', area: '面积' }
 };
