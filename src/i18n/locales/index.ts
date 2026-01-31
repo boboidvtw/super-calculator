@@ -24,16 +24,19 @@ export const zhTw = {
         donate: '贊助作者',
     },
     standard: {
-        title: '標準計算機'
+        title: '標準計算機',
+        desc: '執行基本四則運算，並支援歷史記錄功能。',
     },
     currency: {
         title: '貨幣兌換',
+        desc: '即時匯率換算，支援多國貨幣。',
         converter: '換算',
         rate: '匯率',
         update: '更新',
     },
     unit: {
         title: '單位換算',
+        desc: '常用單位換算，包含長度、重量、溫度等。',
         length: '長度',
         weight: '重量',
         temperature: '溫度',
@@ -42,6 +45,7 @@ export const zhTw = {
     },
     size: {
         title: '尺寸轉換',
+        desc: '各國服飾、鞋碼尺寸對照表。',
         menShoe: '這男鞋',
         wmnShoe: '女鞋',
         menShirt: '男上衣',
@@ -51,6 +55,7 @@ export const zhTw = {
     },
     tip: {
         title: '小費計算',
+        desc: '快速計算小費與分帳金額。',
         bill: '帳單金額',
         tip: '小費',
         total: '總金額',
@@ -59,6 +64,7 @@ export const zhTw = {
     },
     discount: {
         title: '折扣計算',
+        desc: '計算折扣後的最終價格與省下的金額。',
         price: '原價',
         saved: '省下',
         final: '折扣價',
@@ -66,6 +72,7 @@ export const zhTw = {
     },
     health: {
         title: '健康計算',
+        desc: '計算 BMI 與體脂率，關注您的健康。',
         height: '身高',
         weight: '體重',
         age: '年齡',
@@ -76,6 +83,7 @@ export const zhTw = {
     },
     anniversary: {
         title: '紀念日',
+        desc: '紀念日倒數與天數計算。',
         days: '天數',
         select: '選擇日期',
         passed: '已過',
@@ -83,6 +91,7 @@ export const zhTw = {
     },
     fuel: {
         title: '油耗計算',
+        desc: '計算旅程預估油資與油耗。',
         cost: '預估油資',
         fuel: '所需油量',
         distance: '距離',
@@ -91,6 +100,7 @@ export const zhTw = {
     },
     interest: {
         title: '利息計算 (單利)',
+        desc: '試算單利利息收入。',
         total: '總金額',
         interest: '利息收入',
         principal: '本金',
@@ -99,6 +109,7 @@ export const zhTw = {
     },
     insurance: {
         title: '保險 IRR 計算',
+        desc: '計算儲蓄險或年金險的年化報酬率 (IRR)。',
         monthlyPay: '保險月付額',
         years: '繳款年限 (年)',
         payoutYears: '領回年期 (第幾年)',
@@ -136,16 +147,17 @@ export const enUs = {
         insurance: 'Insurance IRR',
         donate: 'Donate',
     },
-    standard: { title: 'Standard Calculator' },
-    currency: { title: 'Currency Converter', converter: 'Converter', rate: 'Rate', update: 'Update' },
-    unit: { title: 'Unit Converter', length: 'Length', weight: 'Weight', temperature: 'Temp', volume: 'Volume', area: 'Area' },
-    size: { title: 'Size Converter', menShoe: 'Men Shoe', wmnShoe: 'Wmn Shoe', menShirt: 'Men Shirt', region: 'Region', smaller: 'Smaller', larger: 'Larger' },
-    tip: { title: 'Tip Calculator', bill: 'Bill Amount', tip: 'Tip', total: 'Total', perPerson: 'Per Person', split: 'Split' },
-    discount: { title: 'Discount Calculator', price: 'Original Price', saved: 'You Save', final: 'Final Price', discount: 'Discount' },
-    health: { title: 'Health Calculator', height: 'Height', weight: 'Weight', age: 'Age', bmi: 'BMI', bfp: 'Body Fat', male: 'Male', female: 'Female' },
-    anniversary: { title: 'Anniversary', days: 'Days', select: 'Select Date', passed: 'Passed since', left: 'Left until' },
-    fuel: { title: 'Fuel Cost', cost: 'Estimated Cost', fuel: 'Fuel Needed', distance: 'Distance', efficiency: 'Efficiency', price: 'Price' },
-    interest: { title: 'Interest Calc', total: 'Total Balance', interest: 'Interest Earned', principal: 'Principal', rate: 'Rate', years: 'Years' }
+    standard: { title: 'Standard Calculator', desc: 'Perform basic arithmetic operations with history.' },
+    currency: { title: 'Currency Converter', desc: 'Convert between multiple currencies with real-time rates.', converter: 'Converter', rate: 'Rate', update: 'Update' },
+    unit: { title: 'Unit Converter', desc: 'Convert between different units of measurement.', length: 'Length', weight: 'Weight', temperature: 'Temp', volume: 'Volume', area: 'Area' },
+    size: { title: 'Size Converter', desc: 'International clothing and shoe size conversion.', menShoe: 'Men Shoe', wmnShoe: 'Wmn Shoe', menShirt: 'Men Shirt', region: 'Region', smaller: 'Smaller', larger: 'Larger' },
+    tip: { title: 'Tip Calculator', desc: 'Calculate tips and split bills easily.', bill: 'Bill Amount', tip: 'Tip', total: 'Total', perPerson: 'Per Person', split: 'Split' },
+    discount: { title: 'Discount Calculator', desc: 'Calculate sale price and savings.', price: 'Original Price', saved: 'You Save', final: 'Final Price', discount: 'Discount' },
+    health: { title: 'Health Calculator', desc: 'Calculate BMI and Body Fat Percentage.', height: 'Height', weight: 'Weight', age: 'Age', bmi: 'BMI', bfp: 'Body Fat', male: 'Male', female: 'Female' },
+    anniversary: { title: 'Anniversary', desc: 'Track days since or until a special date.', days: 'Days', select: 'Select Date', passed: 'Passed since', left: 'Left until' },
+    fuel: { title: 'Fuel Cost', desc: 'Estimate fuel cost and consumption for trips.', cost: 'Estimated Cost', fuel: 'Fuel Needed', distance: 'Distance', efficiency: 'Efficiency', price: 'Price' },
+    interest: { title: 'Interest Calc', desc: 'Calculate simple interest earnings.', total: 'Total Balance', interest: 'Interest Earned', principal: 'Principal', rate: 'Rate', years: 'Years' },
+    insurance: { title: 'Insurance IRR', desc: 'Calculate Internal Rate of Return (IRR) for insurance.', monthlyPay: 'Monthly Pay', years: 'Payment Years', payoutYears: 'Payout Year', payout: 'Payout', calculate: 'Calculate', result: 'IRR (Annual)', totalPaid: 'Total Paid', netProfit: 'Net Profit', note: 'Note: Assumes payments at start of month, payout at end of term' },
 };
 
 // Add other languages placeholders for brevity, will implement fully later or on demand

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCurrency } from '../../hooks/useCurrency';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
 import { Button } from '../../components/Button';
@@ -7,6 +8,7 @@ import { ArrowRightLeft } from 'lucide-react';
 import styles from './CurrencyConverter.module.css';
 
 export function CurrencyConverter() {
+    const { t } = useTranslation();
     const { rates, loading, convert } = useCurrency();
     const [amount, setAmount] = useState('0');
     const [fromCurrency, setFromCurrency] = useState('USD');
@@ -66,6 +68,8 @@ export function CurrencyConverter() {
     return (
         <CalculatorLayout
             className={styles.currencyLayout}
+            title={t('currency.title')}
+            description={t('currency.desc')}
             display={
                 <div className={styles.converterDisplay}>
                     <div className={styles.row}>

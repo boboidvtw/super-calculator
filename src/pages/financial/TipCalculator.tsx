@@ -29,6 +29,8 @@ export function TipCalculator() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            title={t('tip.title')}
+            description={t('tip.desc')}
             display={
                 <div className={styles.resultContainer}>
                     <div className={styles.inputRow}>

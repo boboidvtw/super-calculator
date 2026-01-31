@@ -38,6 +38,8 @@ export function InterestCalculator() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            title={t('interest.title')}
+            description={t('interest.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.summaryBox}>

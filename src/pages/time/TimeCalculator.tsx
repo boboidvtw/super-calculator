@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
 import { Button } from '../../components/Button';
 import { timeUtils, type TimeObject } from '../../utils/mathUtils';
@@ -7,6 +8,7 @@ import styles from './TimeCalculator.module.css';
 const INITIAL_TIME: TimeObject = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
 export function TimeCalculator() {
+    const { t } = useTranslation();
     const [time1, setTime1] = useState<TimeObject>(INITIAL_TIME);
     const [time2, setTime2] = useState<TimeObject>(INITIAL_TIME);
     const [operation, setOperation] = useState<'+' | '-'>('+');
@@ -62,6 +64,8 @@ export function TimeCalculator() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            title={t('time.title')}
+            description={t('time.desc')}
             display={
                 <div className={styles.displayContent}>
                     {renderTimeRow('t1', time1)}

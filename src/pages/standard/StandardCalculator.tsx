@@ -3,7 +3,10 @@ import { Display } from '../../components/Display';
 import { Button } from '../../components/Button';
 import { useCalculator } from '../../hooks/useCalculator';
 
+import { useTranslation } from 'react-i18next';
+
 export function StandardCalculator() {
+    const { t } = useTranslation();
     const {
         state,
         inputDigit,
@@ -53,6 +56,8 @@ export function StandardCalculator() {
         <CalculatorLayout
             display={<Display value={state.currentValue} expression={state.expression} />}
             keypad={renderKeypad()}
+            title={t('standard.title')}
+            description={t('standard.desc')}
         />
     );
 }

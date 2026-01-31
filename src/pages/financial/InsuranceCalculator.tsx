@@ -97,6 +97,7 @@ export function InsuranceCalculator() {
                 <div className={styles.header}>
                     <Calculator className={styles.icon} />
                     <h2>{t('insurance.title')}</h2>
+                    <p className={styles.description}>{t('insurance.desc')}</p>
                 </div>
 
                 <div className={styles.form}>

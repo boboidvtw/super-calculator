@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
 import { Button } from '../../components/Button';
 import { conversionTables, convertUnit, type UnitCategory } from '../../utils/unitConversion';
@@ -14,6 +15,7 @@ const categories: { id: UnitCategory; icon: any; name: string }[] = [
 ];
 
 export function UnitConverter() {
+    const { t } = useTranslation();
     const [category, setCategory] = useState<UnitCategory>('length');
     const [amount, setAmount] = useState('0');
     const [fromUnit, setFromUnit] = useState(conversionTables['length'][0].id);
@@ -81,6 +83,8 @@ export function UnitConverter() {
     return (
         <CalculatorLayout
             className={styles.unitLayout}
+            title={t('unit.title')}
+            description={t('unit.desc')}
             display={
                 <div className={styles.converterDisplay}>
                     <div className={styles.row}>
