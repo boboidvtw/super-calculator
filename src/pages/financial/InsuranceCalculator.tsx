@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calculator } from 'lucide-react';
 import styles from './Financial.module.css';
@@ -6,80 +6,76 @@ import styles from './Financial.module.css';
 export function InsuranceCalculator() {
     const { t } = useTranslation();
     const [monthlyPay, setMonthlyPay] = useState('');
-    const [years, setYears] = useState('');
+    const [years, setYears] = useState(''); // Payment years
+    const [payoutYears, setPayoutYears] = useState(''); // When do we get money back?
     const [payout, setPayout] = useState('');
     const [result, setResult] = useState<{ irr: number; totalPaid: number; netProfit: number } | null>(null);
+    const [error, setError] = useState('');
+
+    // Auto-fill payout years with payment years if empty
+    useEffect(() => {
+        if (years && !payoutYears) {
+            setPayoutYears(years);
+        }
+    }, [years]);
 
     const calculateIRR = () => {
         const pmt = parseFloat(monthlyPay);
-        const y = parseFloat(years);
+        const yPay = parseFloat(years);
+        const yOut = parseFloat(payoutYears);
         const fv = parseFloat(payout);
 
-        if (!pmt || !y || !fv) return;
+        setError('');
 
-        const months = y * 12;
-        const totalPaid = pmt * months;
-        const netProfit = fv - totalPaid;
+        if (!pmt || !yPay || !yOut || !fv) return;
 
-        // IRR Calculation (Newton-Raphson approximation)
-        // Cash flow: -PMT at t=0, 1, ..., n-1. +FV at t=n (assuming payout at end of term)
-        // Equation: -PMT * ((1 - (1+r)^-n) / r) * (1+r) + FV * (1+r)^-n = 0
-        // (Annuity Due: payments at beginning of period)
-
-        // Let monthly rate = r. 
-        // PV of payments (at t=0) = PMT * (1 - (1+r)^-n)/r * (1+r)
-        // PV of payout (at t=0) = FV * (1+r)^-n
-        // NPV = -PV_payments + PV_payout = 0
-
-        // We want to find annual IRR. Let annual rate = R. (1+R) = (1+r)^12 => r = (1+R)^(1/12) - 1.
-        // Usually we solve for monthly r first.
-
-        let guess = 0.005; // 0.5% per month ~ 6% p.a.
-        for (let i = 0; i < 20; i++) {
-            const factor = Math.pow(1 + guess, -months);
-            // PV of payments (Annuity Due)
-            const pvPmts = pmt * ((1 - factor) / guess) * (1 + guess);
-            const pvFv = fv * factor;
-
-            const npv = -pvPmts + pvFv;
-
-            // Derivative of NPV w.r.t guess (r)
-            // d/dr ( -PMT * (1+r)/r * (1 - (1+r)^-n) + FV * (1+r)^-n )
-            // This is complex. Let's use secant method or simple binary search if logical?
-            // Newton is faster but derivative is messy.
-            // Let's use simple iterative search or Binary Search for stability.
-
-            if (Math.abs(npv) < 1) break; // Precision
-
-            // Heuristic adjustment? 
-            // Binary search is safer.
+        if (yOut < yPay) {
+            setError('領回年期不能小於繳款年限');
+            return;
         }
 
-        // Binary Search Implementation for stability
-        let low = -0.01; // -1% per month
+        const monthsPay = yPay * 12;
+        const monthsTotal = yOut * 12; // Time of payout
+
+        const totalPaid = pmt * monthsPay;
+        const netProfit = fv - totalPaid;
+
+        // Binary Search for IRR
+        let low = -0.05; // -5% per month
         let high = 1.0; // 100% per month
         let r = 0;
 
         for (let i = 0; i < 100; i++) {
             r = (low + high) / 2;
-            if (r === 0) r = 0.0000001;
+            if (r === 0) r = 0.000000001;
 
-            // NPV calculation
-            // If r is very close to 0, use simple summation: -PMT * n + FV
-            let npv = 0;
+            // NPV = -PV(Payments) + PV(Payout)
+            // Payments are Annuity Due (beginning of month) for 'monthsPay' periods
+            let pvPmts = 0;
+            let pvFv = 0;
+
             if (Math.abs(r) < 1e-9) {
-                npv = -totalPaid + fv;
+                // Zero interest case
+                pvPmts = totalPaid;
+                pvFv = fv;
             } else {
-                const factor = Math.pow(1 + r, -months);
-                const pvPmts = pmt * ((1 - factor) / r) * (1 + r);
-                const pvFv = fv * factor;
-                npv = -pvPmts + pvFv;
+                const factorPay = Math.pow(1 + r, -monthsPay);
+                const factorTotal = Math.pow(1 + r, -monthsTotal);
+
+                // PV of Annuity Due: PMT * [ (1 - (1+r)^-n) / r ] * (1+r)
+                pvPmts = pmt * ((1 - factorPay) / r) * (1 + r);
+
+                // PV of Payout: FV * (1+r)^-N
+                pvFv = fv * factorTotal;
             }
 
-            if (Math.abs(npv) < 0.1) break;
+            const npv = -pvPmts + pvFv;
+
+            if (Math.abs(npv) < 0.01) break;
 
             if (npv > 0) {
-                // Rate is too low (future value isn't discounted enough to match payments)
+                // NPV > 0 means Future Value is too strong (or Payments too weak) for this rate.
+                // We need a HIGHER discount rate to reduce NPV to 0.
                 low = r;
             } else {
                 high = r;
@@ -122,6 +118,17 @@ export function InsuranceCalculator() {
                             onChange={(e) => setYears(e.target.value)}
                             placeholder="0"
                         />
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label>{t('insurance.payoutYears')}</label>
+                        <input
+                            type="number"
+                            value={payoutYears}
+                            onChange={(e) => setPayoutYears(e.target.value)}
+                            placeholder={years || "0"}
+                        />
+                        {error && <span className={styles.errorText} style={{ color: 'red', fontSize: '0.8rem' }}>{error}</span>}
                     </div>
 
                     <div className={styles.inputGroup}>

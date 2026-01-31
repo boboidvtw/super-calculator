@@ -101,6 +101,7 @@ export const zhTw = {
         title: '保險 IRR 計算',
         monthlyPay: '保險月付額',
         years: '繳款年限 (年)',
+        payoutYears: '領回年期 (第幾年)',
         payout: '到期給付額',
         calculate: '計算 IRR',
         result: '年化報酬率 (IRR)',
