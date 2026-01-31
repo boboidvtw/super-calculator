@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronLeft, Globe } from 'lucide-react';
+import { Menu, X, ChevronLeft, Globe, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -90,6 +90,18 @@ export function RootLayout() {
                         </li>
                     ))}
                 </ul>
+
+                <div className={styles.donateSection}>
+                    <a
+                        href="https://paypal.me/boboidvtw168"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.donateButton}
+                    >
+                        <Heart size={20} className={styles.heartIcon} />
+                        <span>Donate</span>
+                    </a>
+                </div>
             </nav>
 
             {isMenuOpen && <div className={styles.overlay} onClick={toggleMenu} />}
