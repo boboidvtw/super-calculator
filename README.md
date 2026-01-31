@@ -24,6 +24,7 @@
     *   小費計算 (Tip)
     *   折扣計算 (Discount)
     *   利息試算 (Interest)
+    *   保險 IRR 計算 (Insurance IRR)
     *   油耗計算 (Fuel Cost)
 8.  **❤️ 健康計算 (Health)**: BMI、體脂率 (BFP) 計算。
 9.  **📅 紀念日 (Anniversary)**: 計算重要日子的倒數或經過天數。
