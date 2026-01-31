@@ -99,7 +99,7 @@ export function RootLayout() {
                         className={styles.donateButton}
                     >
                         <Heart size={20} className={styles.heartIcon} />
-                        <span>Donate</span>
+                        <span>{t('menu.donate')}</span>
                     </a>
                 </div>
             </nav>
