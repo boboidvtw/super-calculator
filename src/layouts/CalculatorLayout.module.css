@@ -1,0 +1,52 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    max-height: 800px;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    gap: 1rem;
+    padding-bottom: 2rem;
+}
+
+.displayArea {
+    flex: 0 0 auto;
+    min-height: 120px;
+    background-color: var(--bg-color);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    text-align: right;
+    word-break: break-all;
+}
+
+.historyArea {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background-color: var(--card-bg);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.keypadArea {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    padding-bottom: 1rem;
+}
+
+/* Tablet & Desktop Adjustments */
+@media (min-width: 768px) {
+    .container {
+        height: auto;
+        min-height: 600px;
+    }
+}

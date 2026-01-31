@@ -1,0 +1,77 @@
+.unitLayout :global(.displayArea) {
+    padding: 1rem;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.converterDisplay {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.select {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    max-width: 140px;
+}
+
+.amount {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;
+}
+
+.divider {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 2 columns for category buttons in the space of 2 normal buttons */
+    grid-column: span 2;
+    gap: 4px;
+}
+
+.catButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.catButton.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}

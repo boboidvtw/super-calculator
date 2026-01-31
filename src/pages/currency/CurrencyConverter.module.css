@@ -1,0 +1,63 @@
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.currencyLayout :global(.displayArea) {
+    /* Override default display area for custom currency inputs */
+    padding: 1rem;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.converterDisplay {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.select {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    /* Remove default arrow */
+}
+
+.amount {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;
+    /* Align right but handle overflow nicely */
+    max-width: 60%;
+}
+
+.divider {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    line-height: 1;
+}

@@ -1,0 +1,59 @@
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    font-size: 1.5rem;
+    font-weight: 500;
+    transition: all 0.1s active;
+    user-select: none;
+    border: none;
+    outline: none;
+    touch-action: manipulation;
+    aspect-ratio: 1;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.button:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
+/* Variants */
+.default {
+    background-color: var(--button-default-bg, #e5e5ea);
+    color: var(--text-primary);
+}
+
+.primary {
+    /* For operations like +, -, x, / */
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.secondary {
+    /* For top row like AC, +/-, % */
+    background-color: var(--secondary-color, #d1d1d6);
+    /* iOS light gray */
+    color: black;
+}
+
+.accent {
+    /* For = button */
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* Dark mode adjustments done via variables in theme, or here */
+@media (prefers-color-scheme: dark) {
+    .default {
+        background-color: #333333;
+    }
+
+    .secondary {
+        background-color: #a5a5a5;
+        color: black;
+    }
+}

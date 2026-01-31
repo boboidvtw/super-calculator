@@ -1,0 +1,85 @@
+.layout :global(.displayArea) {
+    padding: 1.5rem;
+    background: transparent;
+    box-shadow: none;
+    height: auto;
+}
+
+.displayContent {
+    width: 100%;
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.resultBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resultLabel {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.resultValue {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.subResult {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.inputGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+.inputBtn {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.inputBtn.active {
+    background-color: var(--bg-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+.inputLabel {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.inputValue {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}

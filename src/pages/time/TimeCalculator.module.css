@@ -1,0 +1,95 @@
+.layout :global(.displayArea) {
+    padding: 1rem;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.displayContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.timeRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.unitBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--bg-color);
+    padding: 8px 4px;
+    border-radius: var(--radius-sm);
+    min-width: 45px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.unitBox.active {
+    background-color: var(--card-bg);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+.unitValue {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.unitLabel {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.colon {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    padding-bottom: 1rem;
+}
+
+.operatorRow {
+    display: flex;
+    justify-content: center;
+    margin: -4px 0;
+}
+
+.opButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.resultRow {
+    text-align: right;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.indicator {
+    position: absolute;
+    bottom: -4px;
+    width: 4px;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+}

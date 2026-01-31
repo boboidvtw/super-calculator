@@ -1,0 +1,92 @@
+.layout :global(.displayArea) {
+    padding: 1.5rem;
+    background: transparent;
+    box-shadow: none;
+    height: auto;
+}
+
+.displayContent {
+    width: 100%;
+}
+
+.summaryBox {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+}
+
+.totalValue {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.interestValue {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #34c759;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.inputGroup {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.inputGroup.active {
+    background-color: var(--bg-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+.inputGroup label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.valueDisplay {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
