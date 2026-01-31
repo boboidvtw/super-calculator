@@ -37,6 +37,8 @@ export function FuelCalculator() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            title={t('fuel.title')}
+            description={t('fuel.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.resultBox}>

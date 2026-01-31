@@ -21,7 +21,9 @@ export function AnniversaryCalculator() {
 
     return (
         <CalculatorLayout
-            className={styles.layout}
+            className={styles.anniversaryLayout}
+            title={t('anniversary.title')}
+            description={t('anniversary.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.daysContainer}>

@@ -27,6 +27,8 @@ export function DiscountCalculator() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            title={t('discount.title')}
+            description={t('discount.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.row}>

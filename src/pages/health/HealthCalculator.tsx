@@ -47,6 +47,8 @@ export function HealthCalculator() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            title={t('health.title')}
+            description={t('health.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.resultRow}>

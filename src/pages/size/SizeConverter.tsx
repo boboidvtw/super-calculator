@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
 import { sizeTables, type SizeCategory, type Region } from '../../utils/sizeConversion';
 import { Shirt, Footprints } from 'lucide-react';
@@ -13,6 +14,8 @@ const categories: { id: SizeCategory; icon: any; name: string }[] = [
 const regions: Region[] = ['US', 'UK', 'EU', 'JP'];
 
 export function SizeConverter() {
+    const { t } = useTranslation();
+    const [region, setRegion] = useState<Region>('US');
     const [category, setCategory] = useState<SizeCategory>('MensShoe');
     const [selectedIndex, setSelectedIndex] = useState(2); // Default to middle size
 
@@ -25,6 +28,8 @@ export function SizeConverter() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            title={t('size.title')}
+            description={t('size.desc')}
             display={
                 <div className={styles.displayContent}>
                     {regions.map(region => (

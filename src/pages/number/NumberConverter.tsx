@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
 import { Button } from '../../components/Button';
 import { numberBaseUtils } from '../../utils/mathUtils';
@@ -12,6 +13,7 @@ const bases = [
 ];
 
 export function NumberConverter() {
+    const { t } = useTranslation();
     const [value, setValue] = useState('0');
     const [activeBase, setActiveBase] = useState(10);
 
@@ -86,6 +88,8 @@ export function NumberConverter() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            title={t('number.title')}
+            description={t('number.desc')}
             display={
                 <div className={styles.displayContent}>
                     {bases.map(b => (
