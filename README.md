@@ -205,7 +205,8 @@ PR 或 push ──▶ verify job：npm ci → lint → coverage → build
 | Actions 頁面手動觸發（`workflow_dispatch`，選 main） | ✅ 執行 | ✅ verify 通過才執行 |
 
 - 部署網址：<https://boboidvtw.github.io/super-calculator/>
-- 同時只會有一個部署在跑（`concurrency: pages`），新的部署不會中斷進行中的部署。
+- 同時只會有一個部署在跑（`concurrency: pages`），新的部署會排隊，不會中斷進行中的部署。
+- PR 有新的 commit 時，舊的 CI run 會自動取消；`main` 的 run 一定會跑完，避免部署到一半被取消。
 - **回滾**：在 `main` 上 `git revert` 有問題的 commit，開 PR 合併即可，CI 會自動部署上一個正確的版本。急的話，也可以在 Actions 頁面選上一次成功的 run，按 **Re-run jobs**。
 
 ### 分支保護

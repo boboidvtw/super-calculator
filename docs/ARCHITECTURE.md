@@ -117,6 +117,7 @@
 | 網址 | `https://boboidvtw.github.io/super-calculator/` |
 | Pages 來源 | GitHub Actions（`build_type: workflow`） |
 | 觸發 | `ci.yml`：`main` 的 `verify` job 通過後，由 `deploy` job 使用 `actions/deploy-pages` 部署 |
+| 併發控制 | workflow 層級：只取消過時的 PR run（`cancel-in-progress` 只在 `pull_request` 時為 true）；deploy job：`concurrency: pages`，不取消進行中的部署 |
 | `vite.config.ts` 的 `base` | `'./'`（相對路徑） |
 | 路由 | `HashRouter` |
 
