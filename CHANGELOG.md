@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Fixed
+- CI: two quick pushes to `main` could cancel an in-progress deployment, because the workflow-level `concurrency` cancelled the whole earlier run. Now only superseded PR runs are cancelled.
+
 ## 1.2.0 — 2026-11-04
 
 ### Added
