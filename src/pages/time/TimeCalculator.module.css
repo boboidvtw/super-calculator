@@ -19,6 +19,8 @@
 }
 
 .unitBox {
+    font: inherit;
+    color: inherit;
     display: flex;
     flex-direction: column;
     align-items: center;

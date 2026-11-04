@@ -2,7 +2,8 @@ import { CalculatorLayout } from '../../layouts/CalculatorLayout';
 import { Display } from '../../components/Display';
 import { Button } from '../../components/Button';
 import { useCalculator } from '../../hooks/useCalculator';
-
+import { useKeyboardInput } from '../../hooks/useKeyboardInput';
+import { ERROR_VALUE } from '../../utils/calculator';
 import { useTranslation } from 'react-i18next';
 
 export function StandardCalculator() {
@@ -18,6 +19,18 @@ export function StandardCalculator() {
         toggleSign,
         percentage
     } = useCalculator();
+
+    useKeyboardInput({
+        onDigit: inputDigit,
+        onDot: inputDot,
+        onBackspace: deleteLast,
+        onClear: clear,
+        onEnter: calculateEquals,
+        onOperator: performOperation,
+        onPercent: percentage,
+    });
+
+    const displayValue = state.currentValue === ERROR_VALUE ? t('common.error') : state.currentValue;
 
     const renderKeypad = () => (
         <>
@@ -46,15 +59,16 @@ export function StandardCalculator() {
             <Button variant="primary" onClick={() => performOperation('+')}>+</Button>
 
             {/* Row 5 */}
-            <Button className="col-span-2" style={{ gridColumn: 'span 2' }} onClick={() => inputDigit('0')}>0</Button>
+            <Button onClick={() => inputDigit('0')}>0</Button>
             <Button onClick={inputDot}>.</Button>
+            <Button variant="secondary" onClick={deleteLast} aria-label={t('common.delete')}>⌫</Button>
             <Button variant="accent" onClick={calculateEquals}>=</Button>
         </>
     );
 
     return (
         <CalculatorLayout
-            display={<Display value={state.currentValue} expression={state.expression} />}
+            display={<Display value={displayValue} expression={state.expression} />}
             keypad={renderKeypad()}
             title={t('standard.title')}
             description={t('standard.desc')}

@@ -1,95 +1,42 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calculator } from 'lucide-react';
+import { calculateInsuranceIrr, type InsuranceResult } from '../../utils/finance';
 import styles from './Financial.module.css';
 
+const ERROR_KEYS = {
+    invalidInput: 'insurance.errorInvalid',
+    payoutBeforePayments: 'insurance.errorPayoutBeforePay',
+    noSolution: 'insurance.errorNoSolution',
+} as const;
+
 export function InsuranceCalculator() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [monthlyPay, setMonthlyPay] = useState('');
-    const [years, setYears] = useState(''); // Payment years
-    const [payoutYears, setPayoutYears] = useState(''); // When do we get money back?
+    const [years, setYears] = useState('');
+    const [payoutYears, setPayoutYears] = useState('');
     const [payout, setPayout] = useState('');
-    const [result, setResult] = useState<{ irr: number; totalPaid: number; netProfit: number } | null>(null);
-    const [error, setError] = useState('');
+    const [result, setResult] = useState<InsuranceResult | null>(null);
 
-    // Auto-fill payout years with payment years if empty
-    useEffect(() => {
-        if (years && !payoutYears) {
-            setPayoutYears(years);
-        }
-    }, [years]);
+    // Payout year defaults to the end of the payment term when left blank.
+    const effectivePayoutYears = payoutYears || years;
+    const formatMoney = (n: number) => n.toLocaleString(i18n.language, { maximumFractionDigits: 2 });
 
-    const calculateIRR = () => {
-        const pmt = parseFloat(monthlyPay);
-        const yPay = parseFloat(years);
-        const yOut = parseFloat(payoutYears);
-        const fv = parseFloat(payout);
-
-        setError('');
-
-        if (!pmt || !yPay || !yOut || !fv) return;
-
-        if (yOut < yPay) {
-            setError('領回年期不能小於繳款年限');
-            return;
-        }
-
-        const monthsPay = yPay * 12;
-        const monthsTotal = yOut * 12; // Time of payout
-
-        const totalPaid = pmt * monthsPay;
-        const netProfit = fv - totalPaid;
-
-        // Binary Search for IRR
-        let low = -0.05; // -5% per month
-        let high = 1.0; // 100% per month
-        let r = 0;
-
-        for (let i = 0; i < 100; i++) {
-            r = (low + high) / 2;
-            if (r === 0) r = 0.000000001;
-
-            // NPV = -PV(Payments) + PV(Payout)
-            // Payments are Annuity Due (beginning of month) for 'monthsPay' periods
-            let pvPmts = 0;
-            let pvFv = 0;
-
-            if (Math.abs(r) < 1e-9) {
-                // Zero interest case
-                pvPmts = totalPaid;
-                pvFv = fv;
-            } else {
-                const factorPay = Math.pow(1 + r, -monthsPay);
-                const factorTotal = Math.pow(1 + r, -monthsTotal);
-
-                // PV of Annuity Due: PMT * [ (1 - (1+r)^-n) / r ] * (1+r)
-                pvPmts = pmt * ((1 - factorPay) / r) * (1 + r);
-
-                // PV of Payout: FV * (1+r)^-N
-                pvFv = fv * factorTotal;
-            }
-
-            const npv = -pvPmts + pvFv;
-
-            if (Math.abs(npv) < 0.01) break;
-
-            if (npv > 0) {
-                // NPV > 0 means Future Value is too strong (or Payments too weak) for this rate.
-                // We need a HIGHER discount rate to reduce NPV to 0.
-                low = r;
-            } else {
-                high = r;
-            }
-        }
-
-        const annualIRR = (Math.pow(1 + r, 12) - 1) * 100;
-
-        setResult({
-            irr: annualIRR,
-            totalPaid,
-            netProfit
-        });
+    const handleCalculate = () => {
+        setResult(calculateInsuranceIrr({
+            monthlyPay: Number.parseFloat(monthlyPay),
+            payYears: Number.parseFloat(years),
+            payoutYear: Number.parseFloat(effectivePayoutYears),
+            payout: Number.parseFloat(payout),
+        }));
     };
+
+    const fields = [
+        { id: 'monthlyPay', label: t('insurance.monthlyPay'), value: monthlyPay, set: setMonthlyPay, placeholder: '0' },
+        { id: 'years', label: t('insurance.years'), value: years, set: setYears, placeholder: '0' },
+        { id: 'payoutYears', label: t('insurance.payoutYears'), value: payoutYears, set: setPayoutYears, placeholder: years || '0' },
+        { id: 'payout', label: t('insurance.payout'), value: payout, set: setPayout, placeholder: '0' },
+    ];
 
     return (
         <div className={styles.container}>
@@ -101,65 +48,43 @@ export function InsuranceCalculator() {
                 </div>
 
                 <div className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label>{t('insurance.monthlyPay')}</label>
-                        <input
-                            type="number"
-                            value={monthlyPay}
-                            onChange={(e) => setMonthlyPay(e.target.value)}
-                            placeholder="0"
-                        />
-                    </div>
+                    {fields.map((f) => (
+                        <div key={f.id} className={styles.inputGroup}>
+                            <label htmlFor={`insurance-${f.id}`}>{f.label}</label>
+                            <input
+                                id={`insurance-${f.id}`}
+                                type="number"
+                                inputMode="decimal"
+                                min="0"
+                                value={f.value}
+                                onChange={(e) => f.set(e.target.value)}
+                                placeholder={f.placeholder}
+                            />
+                        </div>
+                    ))}
 
-                    <div className={styles.inputGroup}>
-                        <label>{t('insurance.years')}</label>
-                        <input
-                            type="number"
-                            value={years}
-                            onChange={(e) => setYears(e.target.value)}
-                            placeholder="0"
-                        />
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <label>{t('insurance.payoutYears')}</label>
-                        <input
-                            type="number"
-                            value={payoutYears}
-                            onChange={(e) => setPayoutYears(e.target.value)}
-                            placeholder={years || "0"}
-                        />
-                        {error && <span className={styles.errorText} style={{ color: 'red', fontSize: '0.8rem' }}>{error}</span>}
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <label>{t('insurance.payout')}</label>
-                        <input
-                            type="number"
-                            value={payout}
-                            onChange={(e) => setPayout(e.target.value)}
-                            placeholder="0"
-                        />
-                    </div>
-
-                    <button className={styles.calculateBtn} onClick={calculateIRR}>
+                    <button className={styles.calculateBtn} onClick={handleCalculate}>
                         {t('insurance.calculate')}
                     </button>
 
-                    {result && (
+                    {result && !result.ok && (
+                        <p className={styles.errorText} role="alert">{t(ERROR_KEYS[result.reason])}</p>
+                    )}
+
+                    {result?.ok && (
                         <div className={styles.result}>
                             <div className={styles.resultItem}>
                                 <span>{t('insurance.result')}</span>
-                                <span className={styles.resultValue}>{result.irr.toFixed(2)}%</span>
+                                <span className={styles.resultValue}>{result.annualIrr.toFixed(2)}%</span>
                             </div>
                             <div className={styles.resultRow}>
                                 <span>{t('insurance.totalPaid')}</span>
-                                <span>${result.totalPaid.toLocaleString()}</span>
+                                <span>${formatMoney(result.totalPaid)}</span>
                             </div>
                             <div className={styles.resultRow}>
                                 <span>{t('insurance.netProfit')}</span>
                                 <span className={result.netProfit >= 0 ? styles.positive : styles.negative}>
-                                    ${result.netProfit.toLocaleString()}
+                                    ${formatMoney(result.netProfit)}
                                 </span>
                             </div>
                             <p className={styles.note}>{t('insurance.note')}</p>

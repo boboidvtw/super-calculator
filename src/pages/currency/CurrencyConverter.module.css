@@ -61,3 +61,8 @@
     font-size: 1.5rem;
     line-height: 1;
 }
+.updated {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}

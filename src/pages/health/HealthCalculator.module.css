@@ -37,13 +37,17 @@
 }
 
 .resultValue {
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 9vw, 2.5rem);
+    white-space: nowrap;
+    word-break: normal;
     font-weight: 700;
     color: var(--text-primary);
 }
 
 .statusLabel {
     font-size: 0.8rem;
+    text-align: center;
+    word-break: normal;
     font-weight: 600;
     padding: 2px 8px;
     border-radius: 10px;

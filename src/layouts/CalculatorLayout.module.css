@@ -43,6 +43,11 @@
     padding-bottom: 1rem;
 }
 
+.keypadArea.keypadStack {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Tablet & Desktop Adjustments */
 @media (min-width: 768px) {
     .container {
