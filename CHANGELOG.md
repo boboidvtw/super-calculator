@@ -2,11 +2,18 @@
 
 ## Unreleased
 
-### Changed
-- Dev tooling: ESLint 9 → 10 (`@eslint/js` 10, `eslint-plugin-react-refresh` 0.5), `vite-plugin-pwa` 1 → 2; `overrides` pin `minimatch` ≥ 11.0.4 and `glob` ≥ 14.0.3. `npm audit`: 19 moderate + 2 low → 4 low (dev-only `deepmerge` via `workbox-build`, no upstream fix yet).
+## 1.2.0 — 2026-11-04
 
 ### Added
-- Automatic GitHub Pages deployment (`deploy` job in CI, main only, after lint/tests/build pass): <https://boboidvtw.github.io/super-calculator/>.
+- **Live site** on GitHub Pages: <https://boboidvtw.github.io/super-calculator/>. The `deploy` job in `ci.yml` runs only on `main` (or manual `workflow_dispatch`) after lint, tests with coverage and build pass (#2).
+- **Branch protection** on `main`: the `verify` check must pass; force pushes and deletion are blocked; merged branches are deleted automatically. PRs can use `gh pr merge --auto --squash` (#4).
+- **Documentation**: detailed README (features table, usage, keyboard shortcuts, `?lng=` links, CI/CD, FAQ), new [CONTRIBUTING.md](CONTRIBUTING.md) (workflow, commit types, adding a calculator or a language) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) (layers, PWA caching, deployment, decision log).
+
+### Changed
+- Dev tooling: ESLint 9 → 10 (`@eslint/js` 10, `eslint-plugin-react-refresh` 0.5), `vite-plugin-pwa` 1 → 2; `overrides` pin `minimatch` ≥ 11.0.4 and `glob` ≥ 14.0.3. `npm audit`: 19 moderate + 2 low → 4 low (dev-only `deepmerge` via `workbox-build`, no upstream fix yet) (#3).
+
+### Fixed
+- Offline cache could be wiped by the root site's service worker on the same origin (`boboidvtw.github.io`); fixed on the root site in v3.11.3 ([boboidvtw/boboidvtw.github.io#1](https://github.com/boboidvtw/boboidvtw.github.io/pull/1)).
 
 ## 1.1.0 — 2026-11-04
 
