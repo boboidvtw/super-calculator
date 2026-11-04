@@ -6,6 +6,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF.svg)](https://vitejs.dev/)
 
+🔗 **線上使用**：<https://boboidvtw.github.io/super-calculator/>
+
 **Super Calculator** 是一個現代化、全功能的 Web 計算機應用程式。除了標準計算機，還整合了生活中常用的各種換算與計算工具。
 
 > [!NOTE]
@@ -73,6 +75,10 @@ npm run dev        # http://localhost:5173
 | `npm run coverage` | 測試 + 覆蓋率報告（低於 80% 會失敗） |
 | `npm run lint` | ESLint |
 | `node scripts/generate-icons.mjs` | 重新產生 PWA 圖示 |
+
+### 部署
+
+push 到 `main` 且 CI（lint、測試、build）全綠後，`ci.yml` 的 `deploy` job 會自動把 `dist/` 部署到 GitHub Pages。也可以在 Actions 頁面手動觸發（`workflow_dispatch`）。
 
 CI（GitHub Actions）會在每個 PR 與 push 到 `main` 時執行 lint、測試覆蓋率與建置。
 
