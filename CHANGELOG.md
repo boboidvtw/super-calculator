@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- Dev tooling: ESLint 9 → 10 (`@eslint/js` 10, `eslint-plugin-react-refresh` 0.5), `vite-plugin-pwa` 1 → 2; `overrides` pin `minimatch` ≥ 11.0.4 and `glob` ≥ 14.0.3. `npm audit`: 19 moderate + 2 low → 4 low (dev-only `deepmerge` via `workbox-build`, no upstream fix yet).
+
 ### Added
 - Automatic GitHub Pages deployment (`deploy` job in CI, main only, after lint/tests/build pass): <https://boboidvtw.github.io/super-calculator/>.
 
