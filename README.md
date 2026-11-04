@@ -80,6 +80,10 @@ npm run dev        # http://localhost:5173
 
 push 到 `main` 且 CI（lint、測試、build）全綠後，`ci.yml` 的 `deploy` job 會自動把 `dist/` 部署到 GitHub Pages。也可以在 Actions 頁面手動觸發（`workflow_dispatch`）。
 
+### 貢獻流程
+
+`main` 有分支保護，必須通過 CI 的 `verify` 檢查才能合併，也不能 force push。開 PR 後執行 `gh pr merge --auto --squash`，CI 通過後 GitHub 會自動合併。
+
 CI（GitHub Actions）會在每個 PR 與 push 到 `main` 時執行 lint、測試覆蓋率與建置。
 
 ### 新增語系字串
