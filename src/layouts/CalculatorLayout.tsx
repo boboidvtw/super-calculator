@@ -9,9 +9,13 @@ interface CalculatorLayoutProps {
     className?: string;
     title?: string;
     description?: string;
+    /** 'grid' = 4-column calculator keys; 'stack' = form controls above a self-contained keypad. */
+    keypadLayout?: 'grid' | 'stack';
 }
 
-export function CalculatorLayout({ display, keypad, history, className, title, description }: CalculatorLayoutProps) {
+// The plain "displayArea"/"keypadArea" class names are stable hooks that pages
+// target with `.layout :global(.displayArea)`; CSS-module names alone are hashed.
+export function CalculatorLayout({ display, keypad, history, className, title, description, keypadLayout = 'grid' }: CalculatorLayoutProps) {
     return (
         <div className={clsx(styles.container, className)}>
             {(title || description) && (
@@ -20,7 +24,7 @@ export function CalculatorLayout({ display, keypad, history, className, title, d
                     {description && <p className={styles.description}>{description}</p>}
                 </div>
             )}
-            <div className={styles.displayArea}>
+            <div className={clsx(styles.displayArea, 'displayArea')}>
                 {display}
             </div>
             {history && (
@@ -28,7 +32,7 @@ export function CalculatorLayout({ display, keypad, history, className, title, d
                     {history}
                 </div>
             )}
-            <div className={styles.keypadArea}>
+            <div className={clsx(styles.keypadArea, keypadLayout === 'stack' && styles.keypadStack, 'keypadArea')}>
                 {keypad}
             </div>
         </div>

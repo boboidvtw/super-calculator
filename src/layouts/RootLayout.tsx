@@ -3,18 +3,11 @@ import { Menu, X, ChevronLeft, Globe, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { FEATURES } from '../features';
+import { LANGUAGES } from '../i18n/languages';
 import styles from './RootLayout.module.css';
 
-const LANGUAGES = [
-    { code: 'zh-TW', label: '繁體中文' },
-    { code: 'en-US', label: 'English' },
-    { code: 'de-DE', label: 'Deutsch' },
-    { code: 'fr-FR', label: 'Français' },
-    { code: 'es-ES', label: 'Español' },
-    { code: 'ja-JP', label: '日本語' },
-    { code: 'ko-KR', label: '한국어' },
-    { code: 'zh-CN', label: '简体中文' },
-];
+const DONATE_URL = 'https://paypal.me/boboidvtw168';
 
 export function RootLayout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,48 +17,56 @@ export function RootLayout() {
     const isHome = location.pathname === '/';
 
     const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
+        setIsMenuOpen(open => !open);
+        setIsLangMenuOpen(false);
+    };
+
+    const closeMenu = () => {
+        setIsMenuOpen(false);
         setIsLangMenuOpen(false);
     };
 
     const changeLanguage = (lang: string) => {
         i18n.changeLanguage(lang);
-        setIsLangMenuOpen(false);
-        setIsMenuOpen(false);
+        closeMenu();
     };
 
     const menuItems = [
         { path: '/', label: t('menu.home') },
-        { path: '/standard', label: t('menu.standard') },
-        { path: '/currency', label: t('menu.currency') },
-        { path: '/unit', label: t('menu.unit') },
-        { path: '/time', label: t('menu.time') },
-        { path: '/number', label: t('menu.number') },
-        { path: '/size', label: t('menu.size') },
+        ...FEATURES.map(f => ({ path: `/${f.path}`, label: t(f.labelKey) })),
     ];
 
     return (
         <div className={styles.layout}>
             <header className={styles.header}>
                 {!isHome && (
-                    <Link to="/" className={styles.backButton}>
-                        <ChevronLeft size={24} />
+                    <Link to="/" className={styles.backButton} aria-label={t('common.back')}>
+                        <ChevronLeft size={24} aria-hidden />
                     </Link>
                 )}
                 <h1 className={styles.title}>Super Calculator</h1>
-                <button className={styles.menuButton} onClick={toggleMenu}>
-                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                <button
+                    type="button"
+                    className={styles.menuButton}
+                    onClick={toggleMenu}
+                    aria-label={isMenuOpen ? t('common.closeMenu') : t('common.openMenu')}
+                    aria-expanded={isMenuOpen}
+                    aria-controls="side-menu"
+                >
+                    {isMenuOpen ? <X size={24} aria-hidden /> : <Menu size={24} aria-hidden />}
                 </button>
             </header>
 
-            <nav className={clsx(styles.sidebar, isMenuOpen && styles.open)}>
+            <nav id="side-menu" className={clsx(styles.sidebar, isMenuOpen && styles.open)} aria-hidden={!isMenuOpen} inert={!isMenuOpen}>
                 <div className={styles.langSelector}>
                     <button
+                        type="button"
                         className={styles.langButton}
-                        onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                        onClick={() => setIsLangMenuOpen(open => !open)}
+                        aria-expanded={isLangMenuOpen}
                     >
-                        <Globe size={20} />
-                        <span>Language</span>
+                        <Globe size={20} aria-hidden />
+                        <span>{t('common.language')}</span>
                     </button>
 
                     {isLangMenuOpen && (
@@ -73,8 +74,11 @@ export function RootLayout() {
                             {LANGUAGES.map(lang => (
                                 <button
                                     key={lang.code}
-                                    className={clsx(styles.langOption, i18n.language === lang.code && styles.activeLang)}
+                                    type="button"
+                                    lang={lang.code}
+                                    className={clsx(styles.langOption, i18n.resolvedLanguage === lang.code && styles.activeLang)}
                                     onClick={() => changeLanguage(lang.code)}
+                                    aria-current={i18n.resolvedLanguage === lang.code}
                                 >
                                     {lang.label}
                                 </button>
@@ -86,28 +90,31 @@ export function RootLayout() {
                 <ul className={styles.navList}>
                     {menuItems.map(item => (
                         <li key={item.path}>
-                            <Link to={item.path} onClick={toggleMenu}>{item.label}</Link>
+                            <Link
+                                to={item.path}
+                                onClick={closeMenu}
+                                aria-current={location.pathname === item.path ? 'page' : undefined}
+                            >
+                                {item.label}
+                            </Link>
                         </li>
                     ))}
-                    <li>
-                        <Link to="/insurance" onClick={toggleMenu}>{t('menu.insurance')}</Link>
-                    </li>
                 </ul>
 
                 <div className={styles.donateSection}>
                     <a
-                        href="https://paypal.me/boboidvtw168"
+                        href={DONATE_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.donateButton}
                     >
-                        <Heart size={20} className={styles.heartIcon} />
+                        <Heart size={20} className={styles.heartIcon} aria-hidden />
                         <span>{t('menu.donate')}</span>
                     </a>
                 </div>
             </nav>
 
-            {isMenuOpen && <div className={styles.overlay} onClick={toggleMenu} />}
+            {isMenuOpen && <div className={styles.overlay} onClick={closeMenu} aria-hidden />}
 
             <main className={styles.main}>
                 <Outlet />

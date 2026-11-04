@@ -16,6 +16,16 @@
     margin: 0;
 }
 
+.button:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
 .button:active {
     transform: scale(0.95);
     opacity: 0.8;

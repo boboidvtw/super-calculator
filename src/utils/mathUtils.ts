@@ -45,15 +45,33 @@ const fromSeconds = (totalSeconds: number): TimeObject => {
 };
 
 // Number Base Utils
+const DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+/** Parses a non-negative integer in any base 2..36 with exact BigInt precision. */
+function parseBigInt(value: string, base: number): bigint | null {
+    const normalized = value.trim().toUpperCase();
+    if (!normalized) return null;
+    const bigBase = BigInt(base);
+    let result = 0n;
+    for (const char of normalized) {
+        const digit = DIGITS.indexOf(char);
+        if (digit < 0 || digit >= base) return null;
+        result = result * bigBase + BigInt(digit);
+    }
+    return result;
+}
+
 export const numberBaseUtils = {
+    /** Converts between bases; returns 'Error' for any invalid digit (e.g. "1G" in hex). */
     convert: (value: string, fromBase: number, toBase: number): string => {
         if (!value) return '';
-        try {
-            const decimal = parseInt(value, fromBase);
-            if (isNaN(decimal)) return 'Error';
-            return decimal.toString(toBase).toUpperCase();
-        } catch {
-            return 'Error';
-        }
+        const parsed = parseBigInt(value, fromBase);
+        if (parsed === null) return 'Error';
+        return parsed.toString(toBase).toUpperCase();
     }
 };
+
+/** True when the single character `key` is a valid digit in `base` (2..16). */
+export function isDigitAllowed(key: string, base: number): boolean {
+    return /^[0-9A-F]$/.test(key) && Number.parseInt(key, 16) < base;
+}

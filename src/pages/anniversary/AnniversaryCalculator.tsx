@@ -1,60 +1,60 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
+import { addDays, addYears, daysBetween, parseLocalDate, toLocalDateString } from '../../utils/dateUtils';
 import styles from './AnniversaryCalculator.module.css';
 
 export function AnniversaryCalculator() {
-    const { t } = useTranslation();
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const { t, i18n } = useTranslation();
+    const [date, setDate] = useState(() => toLocalDateString(new Date()));
 
-    const targetDate = new Date(date);
-    const today = new Date();
-
-    // Reset time part for accurate day calc
-    targetDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    const diffTime = Math.abs(targetDate.getTime() - today.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    const isPast = targetDate < today;
+    const targetDate = parseLocalDate(date);
+    const diffDays = targetDate ? daysBetween(new Date(), targetDate) : null;
+    const isPast = diffDays !== null && diffDays < 0;
+    const formatDate = (d: Date) => d.toLocaleDateString(i18n.language);
 
     return (
         <CalculatorLayout
             className={styles.anniversaryLayout}
+            keypadLayout="stack"
             title={t('anniversary.title')}
             description={t('anniversary.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.daysContainer}>
-                        <span className={styles.daysValue}>{diffDays}</span>
-                        <span className={styles.daysLabel}>{t('anniversary.days', 'Days')}</span>
+                        <span className={styles.daysValue}>{diffDays === null ? '–' : Math.abs(diffDays)}</span>
+                        <span className={styles.daysLabel}>{t('anniversary.days')}</span>
                     </div>
                     <div className={styles.message}>
-                        {isPast ? t('anniversary.passed', 'Passed since') : t('anniversary.left', 'Left until')}
+                        {diffDays === null
+                            ? t('anniversary.invalid')
+                            : isPast ? t('anniversary.passed') : t('anniversary.left')}
                     </div>
                 </div>
             }
             keypad={
                 <div className={styles.controls}>
-                    <label className={styles.label}>{t('anniversary.select', 'Select Date')}</label>
+                    <label className={styles.label} htmlFor="anniversary-date">{t('anniversary.select')}</label>
                     <input
+                        id="anniversary-date"
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                         className={styles.dateInput}
                     />
 
-                    <div className={styles.infoBox}>
-                        <div className={styles.infoRow}>
-                            <span>100 Days</span>
-                            <span>{new Date(targetDate.getTime() + 100 * 86400000).toLocaleDateString()}</span>
+                    {targetDate && (
+                        <div className={styles.infoBox}>
+                            <div className={styles.infoRow}>
+                                <span>{t('anniversary.after100')}</span>
+                                <span>{formatDate(addDays(targetDate, 100))}</span>
+                            </div>
+                            <div className={styles.infoRow}>
+                                <span>{t('anniversary.after1Year')}</span>
+                                <span>{formatDate(addYears(targetDate, 1))}</span>
+                            </div>
                         </div>
-                        <div className={styles.infoRow}>
-                            <span>1 Year</span>
-                            <span>{new Date(targetDate.getFullYear() + 1, targetDate.getMonth(), targetDate.getDate()).toLocaleDateString()}</span>
-                        </div>
-                    </div>
+                    )}
                 </div>
             }
         />

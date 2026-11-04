@@ -1,0 +1,20 @@
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+}
+
+/* Form pages need room for their fields, so keys are short rather than square. */
+.numpad > button {
+    aspect-ratio: auto;
+    height: clamp(48px, 7vh, 64px);
+}
+
+.span2 {
+    grid-column: span 2;
+}
+
+.span3 {
+    grid-column: span 3;
+}

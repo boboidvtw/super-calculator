@@ -2,82 +2,60 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
 import { Button } from '../../components/Button';
+import { useNumericInput } from '../../hooks/useNumericInput';
+import { useKeyboardInput } from '../../hooks/useKeyboardInput';
 import { conversionTables, convertUnit, type UnitCategory } from '../../utils/unitConversion';
-import { Ruler, Scale, Thermometer, Box, Grid } from 'lucide-react';
+import { toNumber } from '../../utils/numericInput';
+import { Ruler, Scale, Thermometer, Box, Grid, type LucideIcon } from 'lucide-react';
 import styles from './UnitConverter.module.css';
 
-const categories: { id: UnitCategory; icon: any; name: string }[] = [
-    { id: 'length', icon: Ruler, name: 'Length' },
-    { id: 'weight', icon: Scale, name: 'Weight' },
-    { id: 'temperature', icon: Thermometer, name: 'Temp' },
-    { id: 'volume', icon: Box, name: 'Volume' },
-    { id: 'area', icon: Grid, name: 'Area' },
+const categories: { id: UnitCategory; icon: LucideIcon }[] = [
+    { id: 'length', icon: Ruler },
+    { id: 'weight', icon: Scale },
+    { id: 'temperature', icon: Thermometer },
+    { id: 'volume', icon: Box },
+    { id: 'area', icon: Grid },
 ];
+
+const DIGIT_ROWS = [['7', '8', '9'], ['4', '5', '6'], ['1', '2', '3']];
 
 export function UnitConverter() {
     const { t } = useTranslation();
     const [category, setCategory] = useState<UnitCategory>('length');
-    const [amount, setAmount] = useState('0');
-    const [fromUnit, setFromUnit] = useState(conversionTables['length'][0].id);
-    const [toUnit, setToUnit] = useState(conversionTables['length'][1].id);
+    const amount = useNumericInput('0');
+    const [fromUnit, setFromUnit] = useState(conversionTables.length[0].id);
+    const [toUnit, setToUnit] = useState(conversionTables.length[1].id);
 
-    // Update units when category changes
+    useKeyboardInput({
+        onDigit: amount.inputDigit,
+        onDot: amount.inputDot,
+        onBackspace: amount.backspace,
+        onClear: amount.clear,
+    });
+
     const handleCategoryChange = (newCategory: UnitCategory) => {
+        const units = conversionTables[newCategory];
         setCategory(newCategory);
-        setFromUnit(conversionTables[newCategory][0].id);
-        setToUnit(conversionTables[newCategory][1]?.id || conversionTables[newCategory][0].id);
-        setAmount('0');
+        setFromUnit(units[0].id);
+        setToUnit(units[1]?.id ?? units[0].id);
+        amount.clear();
     };
 
-    const handleDigit = (digit: string) => {
-        setAmount(prev => prev === '0' ? digit : prev + digit);
-    };
+    const result = useMemo(
+        () => convertUnit(toNumber(amount.value), fromUnit, toUnit, category),
+        [amount.value, fromUnit, toUnit, category],
+    );
 
-    const handleDot = () => {
-        if (!amount.includes('.')) setAmount(prev => prev + '.');
-    };
+    const unitSelect = (value: string, onChange: (v: string) => void, label: string) => (
+        <select value={value} onChange={(e) => onChange(e.target.value)} className={styles.select} aria-label={label}>
+            {conversionTables[category].map(u => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+            ))}
+        </select>
+    );
 
-    const handleDelete = () => {
-        setAmount(prev => prev.length > 1 ? prev.slice(0, -1) : '0');
-    };
-
-    const handleClear = () => setAmount('0');
-
-    const result = useMemo(() => {
-        const val = parseFloat(amount);
-        if (isNaN(val)) return 0;
-        return convertUnit(val, fromUnit, toUnit, category);
-    }, [amount, fromUnit, toUnit, category]);
-
-    const renderKeypad = () => (
-        <>
-            <Button variant="secondary" onClick={handleClear}>C</Button>
-            <Button variant="secondary" onClick={handleDelete}>⌫</Button>
-            <div className={styles.categoryGrid}>
-                {categories.map(c => (
-                    <button
-                        key={c.id}
-                        className={`${styles.catButton} ${category === c.id ? styles.active : ''}`}
-                        onClick={() => handleCategoryChange(c.id)}
-                    >
-                        <c.icon size={16} />
-                    </button>
-                ))}
-            </div>
-
-            {['7', '8', '9'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-            <Button variant="primary" style={{ visibility: 'hidden' }}>{' '}</Button>
-
-            {['4', '5', '6'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-            <Button variant="primary" style={{ visibility: 'hidden' }}>{' '}</Button>
-
-            {['1', '2', '3'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-            <Button variant="primary" style={{ visibility: 'hidden' }}>{' '}</Button>
-
-            <Button className="col-span-2" style={{ gridColumn: 'span 2' }} onClick={() => handleDigit('0')}>0</Button>
-            <Button onClick={handleDot}>.</Button>
-            <Button variant="accent" onClick={() => { }}>OK</Button>
-        </>
+    const spacer = (key: string) => (
+        <Button key={key} variant="primary" style={{ visibility: 'hidden' }} aria-hidden tabIndex={-1}> </Button>
     );
 
     return (
@@ -88,35 +66,48 @@ export function UnitConverter() {
             display={
                 <div className={styles.converterDisplay}>
                     <div className={styles.row}>
-                        <select
-                            value={fromUnit}
-                            onChange={(e) => setFromUnit(e.target.value)}
-                            className={styles.select}
-                        >
-                            {conversionTables[category].map(u => (
-                                <option key={u.id} value={u.id}>{u.name}</option>
-                            ))}
-                        </select>
-                        <div className={styles.amount}>{amount}</div>
+                        {unitSelect(fromUnit, setFromUnit, t('unit.from'))}
+                        <div className={styles.amount}>{amount.value}</div>
                     </div>
                     <div className={styles.divider}>=</div>
                     <div className={styles.row}>
-                        <select
-                            value={toUnit}
-                            onChange={(e) => setToUnit(e.target.value)}
-                            className={styles.select}
-                        >
-                            {conversionTables[category].map(u => (
-                                <option key={u.id} value={u.id}>{u.name}</option>
-                            ))}
-                        </select>
+                        {unitSelect(toUnit, setToUnit, t('unit.to'))}
                         <div className={styles.amount}>
                             {result.toLocaleString(undefined, { maximumFractionDigits: 4 })}
                         </div>
                     </div>
                 </div>
             }
-            keypad={renderKeypad()}
+            keypad={
+                <>
+                    <Button variant="secondary" onClick={amount.clear} aria-label={t('common.clear')}>C</Button>
+                    <Button variant="secondary" onClick={amount.backspace} aria-label={t('common.delete')}>⌫</Button>
+                    <div className={styles.categoryGrid} role="group" aria-label={t('unit.category')}>
+                        {categories.map(c => (
+                            <button
+                                key={c.id}
+                                type="button"
+                                className={`${styles.catButton} ${category === c.id ? styles.active : ''}`}
+                                onClick={() => handleCategoryChange(c.id)}
+                                aria-label={t(`unit.${c.id}`)}
+                                aria-pressed={category === c.id}
+                                title={t(`unit.${c.id}`)}
+                            >
+                                <c.icon size={16} aria-hidden />
+                            </button>
+                        ))}
+                    </div>
+
+                    {DIGIT_ROWS.flatMap((row) => [
+                        ...row.map(d => <Button key={d} onClick={() => amount.inputDigit(d)}>{d}</Button>),
+                        spacer(`spacer-${row[0]}`),
+                    ])}
+
+                    <Button style={{ gridColumn: 'span 2', aspectRatio: 'auto' }} onClick={() => amount.inputDigit('0')}>0</Button>
+                    <Button onClick={amount.inputDot}>.</Button>
+                    {spacer('spacer-last')}
+                </>
+            }
         />
     );
 }

@@ -70,12 +70,14 @@
     box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
 }
 
-.inputGroup label {
+.fieldLabel {
+    display: block;
     font-size: 0.8rem;
     color: var(--text-secondary);
 }
 
 .valueDisplay {
+    display: block;
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--text-primary);

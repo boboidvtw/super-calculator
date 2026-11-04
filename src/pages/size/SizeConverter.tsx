@@ -1,26 +1,25 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
-import { sizeTables, type SizeCategory, type Region } from '../../utils/sizeConversion';
-import { Shirt, Footprints } from 'lucide-react';
+import { getSize, sizeTables, type SizeCategory, type Region } from '../../utils/sizeConversion';
+import { Shirt, Footprints, type LucideIcon } from 'lucide-react';
 import styles from './SizeConverter.module.css';
 
-const categories: { id: SizeCategory; icon: any; name: string }[] = [
-    { id: 'MensShoe', icon: Footprints, name: 'Men Shoe' },
-    { id: 'WomensShoe', icon: Footprints, name: 'Wmn Shoe' },
-    { id: 'MensTShirt', icon: Shirt, name: 'Men Shirt' },
+const categories: { id: SizeCategory; icon: LucideIcon; labelKey: string }[] = [
+    { id: 'MensShoe', icon: Footprints, labelKey: 'size.menShoe' },
+    { id: 'WomensShoe', icon: Footprints, labelKey: 'size.wmnShoe' },
+    { id: 'MensTShirt', icon: Shirt, labelKey: 'size.menShirt' },
 ];
 
 const regions: Region[] = ['US', 'UK', 'EU', 'JP'];
+const DEFAULT_INDEX = 2;
 
 export function SizeConverter() {
     const { t } = useTranslation();
-    const [region, setRegion] = useState<Region>('US');
     const [category, setCategory] = useState<SizeCategory>('MensShoe');
-    const [selectedIndex, setSelectedIndex] = useState(2); // Default to middle size
+    const [selectedIndex, setSelectedIndex] = useState(DEFAULT_INDEX);
 
-    const currentSizes = sizeTables[category];
-    const totalSizes = currentSizes['US'].length;
+    const totalSizes = sizeTables[category].US.length;
 
     const handleNext = () => setSelectedIndex(i => Math.min(i + 1, totalSizes - 1));
     const handlePrev = () => setSelectedIndex(i => Math.max(i - 1, 0));
@@ -28,14 +27,15 @@ export function SizeConverter() {
     return (
         <CalculatorLayout
             className={styles.layout}
+            keypadLayout="stack"
             title={t('size.title')}
             description={t('size.desc')}
             display={
-                <div className={styles.displayContent}>
+                <div className={styles.displayContent} aria-live="polite">
                     {regions.map(region => (
                         <div key={region} className={styles.row}>
                             <span className={styles.label}>{region}</span>
-                            <span className={styles.value}>{currentSizes[region][selectedIndex]}</span>
+                            <span className={styles.value}>{getSize(category, region, selectedIndex)}</span>
                         </div>
                     ))}
                 </div>
@@ -46,18 +46,24 @@ export function SizeConverter() {
                         {categories.map(c => (
                             <button
                                 key={c.id}
+                                type="button"
                                 className={`${styles.catButton} ${category === c.id ? styles.active : ''}`}
-                                onClick={() => { setCategory(c.id); setSelectedIndex(2); }}
+                                onClick={() => { setCategory(c.id); setSelectedIndex(DEFAULT_INDEX); }}
+                                aria-pressed={category === c.id}
                             >
-                                <c.icon size={20} />
-                                <span>{c.name}</span>
+                                <c.icon size={20} aria-hidden />
+                                <span>{t(c.labelKey)}</span>
                             </button>
                         ))}
                     </div>
 
                     <div className={styles.navRow}>
-                        <button className={styles.navButton} onClick={handlePrev}>&lt; Smaller</button>
-                        <button className={styles.navButton} onClick={handleNext}>Larger &gt;</button>
+                        <button type="button" className={styles.navButton} onClick={handlePrev} disabled={selectedIndex === 0}>
+                            &lt; {t('size.smaller')}
+                        </button>
+                        <button type="button" className={styles.navButton} onClick={handleNext} disabled={selectedIndex === totalSizes - 1}>
+                            {t('size.larger')} &gt;
+                        </button>
                     </div>
                 </div>
             }

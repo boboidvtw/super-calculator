@@ -1,66 +1,53 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
-import { Button } from '../../components/Button';
+import { NumPad } from '../../components/NumPad';
+import { useNumericInput } from '../../hooks/useNumericInput';
+import { BMI_STATUS_COLORS, bmiStatus, calculateBmi, estimateBodyFat, type Sex } from '../../utils/health';
+import { toNumber } from '../../utils/numericInput';
 import styles from './HealthCalculator.module.css';
+
+type Field = 'h' | 'w' | 'a';
 
 export function HealthCalculator() {
     const { t } = useTranslation();
-    const [height, setHeight] = useState('170'); // cm
-    const [weight, setWeight] = useState('65'); // kg
-    const [age, setAge] = useState('25');
-    const [gender, setGender] = useState<'m' | 'f'>('m');
-    const [activeInput, setActiveInput] = useState<'h' | 'w' | 'a'>('h');
+    const height = useNumericInput('170', 5); // cm
+    const weight = useNumericInput('65', 5); // kg
+    const age = useNumericInput('25', 3);
+    const [sex, setSex] = useState<Sex>('m');
+    const [active, setActive] = useState<Field>('h');
+    const inputs = { h: height, w: weight, a: age };
 
-    const h = parseFloat(height) || 0;
-    const w = parseFloat(weight) || 0;
+    const bmi = calculateBmi(toNumber(height.value), toNumber(weight.value));
+    const status = bmi === null ? null : bmiStatus(bmi);
+    const color = status ? BMI_STATUS_COLORS[status] : undefined;
+    const bodyFat = estimateBodyFat(bmi, toNumber(age.value, Number.NaN), sex);
 
-    // BMI Calculation
-    const heightM = h / 100;
-    const bmi = heightM > 0 ? w / (heightM * heightM) : 0;
-
-    // BFP Calculation (U.S. Navy Method simplified or Jackson-Pollock - using simple BMI based est for demo)
-    // Adult Body Fat % = (1.20 × BMI) + (0.23 × Age) − (10.8 × Sex) − 5.4 
-    // Sex: 1 for men, 0 for women
-    const sexFactor = gender === 'm' ? 1 : 0;
-    const bfp = bmi > 0 ? (1.20 * bmi) + (0.23 * parseFloat(age)) - (10.8 * sexFactor) - 5.4 : 0;
-
-    const getBMIStatus = (val: number) => {
-        if (val < 18.5) return { label: 'Underweight', color: '#ffcc00' };
-        if (val < 25) return { label: 'Normal', color: '#34c759' };
-        if (val < 30) return { label: 'Overweight', color: '#ff9500' };
-        return { label: 'Obese', color: '#ff3b30' };
-    };
-
-    const status = getBMIStatus(bmi);
-
-    const handleDigit = (d: string) => {
-        const setter = activeInput === 'h' ? setHeight : activeInput === 'w' ? setWeight : setAge;
-        setter(prev => prev === '0' ? d : prev + d);
-    };
-
-    const handleClear = () => {
-        const setter = activeInput === 'h' ? setHeight : activeInput === 'w' ? setWeight : setAge;
-        setter('0');
-    };
+    const fields: { id: Field; label: string; value: string }[] = [
+        { id: 'h', label: `${t('health.height')} (cm)`, value: height.value },
+        { id: 'w', label: `${t('health.weight')} (kg)`, value: weight.value },
+        { id: 'a', label: t('health.age'), value: age.value },
+    ];
 
     return (
         <CalculatorLayout
             className={styles.layout}
+            keypadLayout="stack"
             title={t('health.title')}
             description={t('health.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.resultRow}>
                         <div className={styles.resultItem}>
-                            <span className={styles.resultLabel}>BMI</span>
-                            <span className={styles.resultValue} style={{ color: status.color }}>{bmi.toFixed(1)}</span>
-                            <span className={styles.statusLabel} style={{ color: status.color }}>{status.label}</span>
+                            <span className={styles.resultLabel}>{t('health.bmi')}</span>
+                            <span className={styles.resultValue} style={{ color }}>{bmi === null ? '–' : bmi.toFixed(1)}</span>
+                            {status && <span className={styles.statusLabel} style={{ color }}>{t(`health.status.${status}`)}</span>}
                         </div>
                         <div className={styles.divider} />
                         <div className={styles.resultItem}>
-                            <span className={styles.resultLabel}>Body Fat</span>
-                            <span className={styles.resultValue}>{bfp.toFixed(1)}%</span>
+                            <span className={styles.resultLabel}>{t('health.bfp')}</span>
+                            <span className={styles.resultValue}>{bodyFat === null ? '–' : `${bodyFat.toFixed(1)}%`}</span>
+                            <span className={styles.statusLabel}>{t('health.bfpNote')}</span>
                         </div>
                     </div>
                 </div>
@@ -68,50 +55,33 @@ export function HealthCalculator() {
             keypad={
                 <>
                     <div className={styles.inputGrid}>
-                        <button
-                            className={`${styles.inputBtn} ${activeInput === 'h' ? styles.active : ''}`}
-                            onClick={() => setActiveInput('h')}
-                        >
-                            <span className={styles.inputLabel}>{t('health.height', 'Height')} (cm)</span>
-                            <span className={styles.inputValue}>{height}</span>
-                        </button>
-                        <button
-                            className={`${styles.inputBtn} ${activeInput === 'w' ? styles.active : ''}`}
-                            onClick={() => setActiveInput('w')}
-                        >
-                            <span className={styles.inputLabel}>{t('health.weight', 'Weight')} (kg)</span>
-                            <span className={styles.inputValue}>{weight}</span>
-                        </button>
-                        <button
-                            className={`${styles.inputBtn} ${activeInput === 'a' ? styles.active : ''}`}
-                            onClick={() => setActiveInput('a')}
-                        >
-                            <span className={styles.inputLabel}>{t('health.age', 'Age')}</span>
-                            <span className={styles.inputValue}>{age}</span>
-                        </button>
-                        <div className={styles.genderToggle}>
+                        {fields.map((f) => (
                             <button
-                                className={`${styles.genderBtn} ${gender === 'm' ? styles.activeGender : ''}`}
-                                onClick={() => setGender('m')}
+                                key={f.id}
+                                type="button"
+                                className={`${styles.inputBtn} ${active === f.id ? styles.active : ''}`}
+                                onClick={() => setActive(f.id)}
+                                aria-pressed={active === f.id}
                             >
-                                Male
+                                <span className={styles.inputLabel}>{f.label}</span>
+                                <span className={styles.inputValue}>{f.value}</span>
                             </button>
-                            <button
-                                className={`${styles.genderBtn} ${gender === 'f' ? styles.activeGender : ''}`}
-                                onClick={() => setGender('f')}
-                            >
-                                Female
-                            </button>
+                        ))}
+                        <div className={styles.genderToggle} role="group" aria-label={t('health.sex')}>
+                            {(['m', 'f'] as const).map((s) => (
+                                <button
+                                    key={s}
+                                    type="button"
+                                    className={`${styles.genderBtn} ${sex === s ? styles.activeGender : ''}`}
+                                    onClick={() => setSex(s)}
+                                    aria-pressed={sex === s}
+                                >
+                                    {t(s === 'm' ? 'health.male' : 'health.female')}
+                                </button>
+                            ))}
                         </div>
                     </div>
-
-                    <div className={styles.numpad}>
-                        {['7', '8', '9'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        {['4', '5', '6'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        {['1', '2', '3'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        <Button onClick={() => handleDigit('0')} className="col-span-2" style={{ gridColumn: 'span 2' }}>0</Button>
-                        <Button variant="secondary" onClick={handleClear}>C</Button>
-                    </div>
+                    <NumPad input={inputs[active]} allowDecimal={active !== 'a'} />
                 </>
             }
         />

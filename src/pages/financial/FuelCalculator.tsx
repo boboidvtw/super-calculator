@@ -1,89 +1,68 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
-import { Button } from '../../components/Button';
+import { NumPad } from '../../components/NumPad';
+import { useNumericInput } from '../../hooks/useNumericInput';
+import { fuelCost } from '../../utils/finance';
+import { toNumber } from '../../utils/numericInput';
 import styles from './FuelCalculator.module.css';
+
+type Field = 'd' | 'e' | 'p';
 
 export function FuelCalculator() {
     const { t } = useTranslation();
-    const [distance, setDistance] = useState('0'); // km
-    const [efficiency, setEfficiency] = useState('12'); // km/l
-    const [price, setPrice] = useState('30'); // per liter
-    const [activeInput, setActiveInput] = useState<'d' | 'e' | 'p'>('d');
+    const distance = useNumericInput('0'); // km
+    const efficiency = useNumericInput('12'); // km/L
+    const price = useNumericInput('30'); // per liter
+    const [active, setActive] = useState<Field>('d');
+    const inputs = { d: distance, e: efficiency, p: price };
 
-    const d = parseFloat(distance) || 0;
-    const e = parseFloat(efficiency) || 1;
-    const p = parseFloat(price) || 0;
+    const result = fuelCost(toNumber(distance.value), toNumber(efficiency.value), toNumber(price.value));
 
-    const fuelNeeded = d / e;
-    const totalCost = fuelNeeded * p;
-
-    const handleDigit = (digit: string) => {
-        const setter = activeInput === 'd' ? setDistance : activeInput === 'e' ? setEfficiency : setPrice;
-        setter(prev => prev === '0' ? digit : prev + digit);
-    };
-
-    const handleDot = () => {
-        const setter = activeInput === 'd' ? setDistance : activeInput === 'e' ? setEfficiency : setPrice;
-        const current = activeInput === 'd' ? distance : activeInput === 'e' ? efficiency : price;
-        if (!current.includes('.')) setter(prev => prev + '.');
-    };
-
-    const handleClear = () => {
-        const setter = activeInput === 'd' ? setDistance : activeInput === 'e' ? setEfficiency : setPrice;
-        setter('0');
-    };
+    const fields: { id: Field; label: string; value: string }[] = [
+        { id: 'd', label: `${t('fuel.distance')} (km)`, value: distance.value },
+        { id: 'e', label: `${t('fuel.efficiency')} (km/L)`, value: efficiency.value },
+        { id: 'p', label: `${t('fuel.price')} ($/L)`, value: price.value },
+    ];
 
     return (
         <CalculatorLayout
             className={styles.layout}
+            keypadLayout="stack"
             title={t('fuel.title')}
             description={t('fuel.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.resultBox}>
-                        <span className={styles.resultLabel}>{t('fuel.cost', 'Estimated Cost')}</span>
-                        <span className={styles.resultValue}>${totalCost.toFixed(2)}</span>
+                        <span className={styles.resultLabel}>{t('fuel.cost')}</span>
+                        <span className={styles.resultValue}>{result ? `$${result.cost.toFixed(2)}` : '–'}</span>
                     </div>
                     <div className={styles.subResult}>
-                        <span>{t('fuel.fuel', 'Fuel Needed')}: {fuelNeeded.toFixed(1)} L</span>
+                        <span>
+                            {result
+                                ? `${t('fuel.fuel')}: ${result.liters.toFixed(1)} L`
+                                : t('fuel.errorEfficiency')}
+                        </span>
                     </div>
                 </div>
             }
             keypad={
                 <>
                     <div className={styles.inputGrid}>
-                        <button
-                            className={`${styles.inputBtn} ${activeInput === 'd' ? styles.active : ''}`}
-                            onClick={() => setActiveInput('d')}
-                        >
-                            <span className={styles.inputLabel}>{t('fuel.distance', 'Distance')} (km)</span>
-                            <span className={styles.inputValue}>{distance}</span>
-                        </button>
-                        <button
-                            className={`${styles.inputBtn} ${activeInput === 'e' ? styles.active : ''}`}
-                            onClick={() => setActiveInput('e')}
-                        >
-                            <span className={styles.inputLabel}>{t('fuel.efficiency', 'Efficiency')} (km/L)</span>
-                            <span className={styles.inputValue}>{efficiency}</span>
-                        </button>
-                        <button
-                            className={`${styles.inputBtn} ${activeInput === 'p' ? styles.active : ''}`}
-                            onClick={() => setActiveInput('p')}
-                        >
-                            <span className={styles.inputLabel}>{t('fuel.price', 'Price')} ($/L)</span>
-                            <span className={styles.inputValue}>{price}</span>
-                        </button>
+                        {fields.map((f) => (
+                            <button
+                                key={f.id}
+                                type="button"
+                                className={`${styles.inputBtn} ${active === f.id ? styles.active : ''}`}
+                                onClick={() => setActive(f.id)}
+                                aria-pressed={active === f.id}
+                            >
+                                <span className={styles.inputLabel}>{f.label}</span>
+                                <span className={styles.inputValue}>{f.value}</span>
+                            </button>
+                        ))}
                     </div>
-
-                    <div className={styles.numpad}>
-                        {['7', '8', '9'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        {['4', '5', '6'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        {['1', '2', '3'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        <Button onClick={() => handleDigit('0')} className="col-span-2" style={{ gridColumn: 'span 2' }}>0</Button>
-                        <Button onClick={handleDot}>.</Button>
-                        <Button variant="secondary" onClick={handleClear}>C</Button>
-                    </div>
+                    <NumPad input={inputs[active]} />
                 </>
             }
         />

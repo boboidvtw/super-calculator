@@ -1,4 +1,4 @@
-import { ReactNode, ButtonHTMLAttributes } from 'react';
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
 import clsx from 'clsx';
 import styles from './Button.module.css';
 
@@ -13,10 +13,12 @@ export function Button({
     size = 'default',
     className,
     children,
+    type = 'button',
     ...props
 }: ButtonProps) {
     return (
         <button
+            type={type}
             className={clsx(
                 styles.button,
                 styles[variant],

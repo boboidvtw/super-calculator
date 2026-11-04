@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
 import { Button } from '../../components/Button';
+import { useKeyboardInput } from '../../hooks/useKeyboardInput';
 import { timeUtils, type TimeObject } from '../../utils/mathUtils';
 import styles from './TimeCalculator.module.css';
 
 const INITIAL_TIME: TimeObject = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+const MAX_UNIT_DIGITS = 5;
 
 export function TimeCalculator() {
     const { t } = useTranslation();
@@ -23,7 +25,8 @@ export function TimeCalculator() {
         const setter = activeField === 't1' ? setTime1 : setTime2;
         setter(prev => {
             const currentVal = prev[activeUnit].toString();
-            const newVal = parseInt(currentVal === '0' ? digit : currentVal + digit);
+            if (currentVal !== '0' && currentVal.length >= MAX_UNIT_DIGITS) return prev;
+            const newVal = Number.parseInt(currentVal === '0' ? digit : currentVal + digit, 10);
             return { ...prev, [activeUnit]: newVal };
         });
     };
@@ -38,15 +41,28 @@ export function TimeCalculator() {
         setTime2(INITIAL_TIME);
     };
 
+    const backspace = () => {
+        const setter = activeField === 't1' ? setTime1 : setTime2;
+        setter(prev => {
+            const currentVal = prev[activeUnit].toString();
+            const next = currentVal.length > 1 ? Number.parseInt(currentVal.slice(0, -1), 10) : 0;
+            return { ...prev, [activeUnit]: next };
+        });
+    };
+
+    useKeyboardInput({ onDigit: handleDigit, onBackspace: backspace, onClear: clear });
+
     const renderUnitInput = (label: string, field: 't1' | 't2', unit: keyof TimeObject, value: number) => (
-        <div
+        <button
+            type="button"
             className={`${styles.unitBox} ${activeField === field && activeUnit === unit ? styles.active : ''}`}
             onClick={() => { setActiveField(field); setActiveUnit(unit); }}
+            aria-pressed={activeField === field && activeUnit === unit}
         >
             <span className={styles.unitValue}>{value}</span>
             <span className={styles.unitLabel}>{label}</span>
-            {field === 't1' && activeField === 't1' && activeUnit === unit && <div className={styles.indicator} />}
-        </div>
+            {activeField === field && activeUnit === unit && <span className={styles.indicator} />}
+        </button>
     );
 
     const renderTimeRow = (field: 't1' | 't2', time: TimeObject) => (
@@ -74,6 +90,7 @@ export function TimeCalculator() {
                         <button
                             className={styles.opButton}
                             onClick={() => setOperation(prev => prev === '+' ? '-' : '+')}
+                            aria-label={t('time.toggleOperation')}
                         >
                             {operation}
                         </button>
@@ -90,8 +107,8 @@ export function TimeCalculator() {
                 <>
                     <Button variant="secondary" onClick={clearAll}>AC</Button>
                     <Button variant="secondary" onClick={clear}>C</Button>
-                    <Button variant="primary" style={{ visibility: 'hidden' }}>{' '}</Button>
-                    <Button variant="primary" style={{ visibility: 'hidden' }}>{' '}</Button>
+                    <Button variant="secondary" onClick={backspace} aria-label={t('common.delete')}>⌫</Button>
+                    <Button variant="secondary" onClick={() => setActiveUnit('days')}>D</Button>
 
                     {['7', '8', '9'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
                     <Button variant="secondary" onClick={() => setActiveUnit('hours')}>H</Button>
@@ -102,9 +119,10 @@ export function TimeCalculator() {
                     {['1', '2', '3'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
                     <Button variant="secondary" onClick={() => setActiveUnit('seconds')}>S</Button>
 
-                    <Button className="col-span-2" style={{ gridColumn: 'span 2' }} onClick={() => handleDigit('0')}>0</Button>
-                    <Button onClick={() => setActiveField(prev => prev === 't1' ? 't2' : 't1')}>Next</Button>
-                    <Button variant="accent" onClick={() => { }}>OK</Button>
+                    <Button style={{ gridColumn: 'span 2', aspectRatio: 'auto' }} onClick={() => handleDigit('0')}>0</Button>
+                    <Button variant="accent" style={{ gridColumn: 'span 2', aspectRatio: 'auto', fontSize: '1rem' }} onClick={() => setActiveField(prev => prev === 't1' ? 't2' : 't1')}>
+                        {t('time.next')}
+                    </Button>
                 </>
             }
         />

@@ -1,55 +1,52 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalculatorLayout } from '../../layouts/CalculatorLayout';
-import { Button } from '../../components/Button';
+import { NumPad } from '../../components/NumPad';
+import { useNumericInput } from '../../hooks/useNumericInput';
+import { simpleInterest } from '../../utils/finance';
+import { toNumber } from '../../utils/numericInput';
 import styles from './InterestCalculator.module.css';
+
+type Field = 'p' | 'r' | 'y';
 
 export function InterestCalculator() {
     const { t } = useTranslation();
-    const [principal, setPrincipal] = useState('10000');
-    const [rate, setRate] = useState('5');
-    const [years, setYears] = useState('1');
-    const [activeInput, setActiveInput] = useState<'p' | 'r' | 'y'>('p');
+    const principal = useNumericInput('10000');
+    const rate = useNumericInput('5');
+    const years = useNumericInput('1');
+    const [active, setActive] = useState<Field>('p');
+    const inputs = { p: principal, r: rate, y: years };
 
-    const p = parseFloat(principal) || 0;
-    const r = parseFloat(rate) || 0;
-    const y = parseFloat(years) || 0;
+    const { total, interest } = simpleInterest(toNumber(principal.value), toNumber(rate.value), toNumber(years.value));
 
-    // Simple Interest Formula: A = P(1 + rt)
-    const totalSimple = p * (1 + (r / 100) * y);
-    const interestSimple = totalSimple - p;
-
-    const handleDigit = (digit: string) => {
-        const setter = activeInput === 'p' ? setPrincipal : activeInput === 'r' ? setRate : setYears;
-        setter(prev => prev === '0' ? digit : prev + digit);
-    };
-
-    const handleDot = () => {
-        const setter = activeInput === 'p' ? setPrincipal : activeInput === 'r' ? setRate : setYears;
-        const current = activeInput === 'p' ? principal : activeInput === 'r' ? rate : years;
-        if (!current.includes('.')) setter(prev => prev + '.');
-    };
-
-    const handleClear = () => {
-        const setter = activeInput === 'p' ? setPrincipal : activeInput === 'r' ? setRate : setYears;
-        setter('0');
-    };
+    const fieldButton = (field: Field, label: string, display: string) => (
+        <button
+            type="button"
+            className={`${styles.inputGroup} ${active === field ? styles.active : ''}`}
+            onClick={() => setActive(field)}
+            aria-pressed={active === field}
+        >
+            <span className={styles.fieldLabel}>{label}</span>
+            <span className={styles.valueDisplay}>{display}</span>
+        </button>
+    );
 
     return (
         <CalculatorLayout
             className={styles.layout}
+            keypadLayout="stack"
             title={t('interest.title')}
             description={t('interest.desc')}
             display={
                 <div className={styles.displayContent}>
                     <div className={styles.summaryBox}>
                         <div className={styles.summaryRow}>
-                            <span>{t('interest.total', 'Total Balance')}</span>
-                            <span className={styles.totalValue}>${totalSimple.toFixed(2)}</span>
+                            <span>{t('interest.total')}</span>
+                            <span className={styles.totalValue}>${total.toFixed(2)}</span>
                         </div>
                         <div className={styles.summaryRow}>
-                            <span>{t('interest.interest', 'Interest Earned')}</span>
-                            <span className={styles.interestValue}>+${interestSimple.toFixed(2)}</span>
+                            <span>{t('interest.interest')}</span>
+                            <span className={styles.interestValue}>+${interest.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
@@ -57,30 +54,13 @@ export function InterestCalculator() {
             keypad={
                 <>
                     <div className={styles.formContainer}>
-                        <button className={`${styles.inputGroup} ${activeInput === 'p' ? styles.active : ''}`} onClick={() => setActiveInput('p')}>
-                            <label>{t('interest.principal', 'Principal')}</label>
-                            <div className={styles.valueDisplay}>${principal}</div>
-                        </button>
+                        {fieldButton('p', t('interest.principal'), `$${principal.value}`)}
                         <div className={styles.row}>
-                            <button className={`${styles.inputGroup} ${activeInput === 'r' ? styles.active : ''}`} onClick={() => setActiveInput('r')}>
-                                <label>{t('interest.rate', 'Rate')} (%)</label>
-                                <div className={styles.valueDisplay}>{rate}%</div>
-                            </button>
-                            <button className={`${styles.inputGroup} ${activeInput === 'y' ? styles.active : ''}`} onClick={() => setActiveInput('y')}>
-                                <label>{t('interest.years', 'Years')}</label>
-                                <div className={styles.valueDisplay}>{years}</div>
-                            </button>
+                            {fieldButton('r', `${t('interest.rate')} (%)`, `${rate.value}%`)}
+                            {fieldButton('y', t('interest.years'), years.value)}
                         </div>
                     </div>
-
-                    <div className={styles.numpad}>
-                        {['7', '8', '9'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        {['4', '5', '6'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        {['1', '2', '3'].map(d => <Button key={d} onClick={() => handleDigit(d)}>{d}</Button>)}
-                        <Button onClick={() => handleDigit('0')} className="col-span-2" style={{ gridColumn: 'span 2' }}>0</Button>
-                        <Button onClick={handleDot}>.</Button>
-                        <Button variant="secondary" onClick={handleClear}>C</Button>
-                    </div>
+                    <NumPad input={inputs[active]} />
                 </>
             }
         />
