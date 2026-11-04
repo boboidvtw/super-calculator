@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Automatic GitHub Pages deployment (`deploy` job in CI, main only, after lint/tests/build pass): <https://boboidvtw.github.io/super-calculator/>.
+
 ## 1.1.0 — 2026-11-04
 
 ### Fixed
